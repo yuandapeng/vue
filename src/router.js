@@ -33,6 +33,12 @@ export const RouterMap =[
         meta: { title: '登陆', icon: 'dashboard', noCache: true },
         hidden: true
     },
+    {
+        path: '/404',
+        component: () => import('@/pages/errorPage/404'),
+        hidden: true
+    },
+    { path: '*', redirect: '/404', hidden: true }
 ]
 
 
