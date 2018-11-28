@@ -1,4 +1,5 @@
 <template>
+
     <div class="father">
         <h3>这里是父组件</h3>
         <!--第一次使用：用flex展示数据-->

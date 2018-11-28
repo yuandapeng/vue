@@ -7,7 +7,13 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
-  "keywords":["vue","vuex","axios","vue-router","permission"],
+  "keywords": [
+    "vue",
+    "vuex",
+    "axios",
+    "vue-router",
+    "permission"
+  ],
   "dependencies": {
     "axios": "^0.18.0",
     "element-ui": "^2.4.11",

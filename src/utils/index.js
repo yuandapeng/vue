@@ -90,6 +90,7 @@ export function getQueryObject(url) {
  * @param {Sting} val input value
  * @returns {number} output value
  */
+// eslint-disable-next-line
 export function getByteLen(val) {
     let len = 0
     for (let i = 0; i < val.length; i++) {
