@@ -1,47 +1,27 @@
 <template>
     <el-container :class="classObj">
-
         <el-aside  class="sidebar-container">
             <el-scrollbar wrap-class="scrollbar-wrapper">
                 <el-menu
                         :collapse="isCollapse"
                         :show-timeout="200"
                         :default-active="$route.path"
-                        :router="true"
                         class="el-menu"
                         mode="vertical"
                         text-color="#bfcbd9"
                         background-color="#304156"
                         active-text-color="#409EFF">
-
-                    <template v-for="route in permission_routers">
-                        <el-submenu :index="route.path" v-if="route.children && route.children.length && !route.hidden"
-                                    :key="route.path">
-
-                            <template slot="title">
-                                <svg-icon :icon-class="route.meta.icon"></svg-icon>
-                                {{route.meta.title}}
-                            </template>
-                            <el-menu-item v-for="(itemChild , index) in route.children" :index="itemChild.path"
-                                          :key="index">
-                                {{itemChild.meta.title}}
-                            </el-menu-item>
-                        </el-submenu>
-                        <el-menu-item :index="route.path" :key="route.path" v-else-if="!route.hidden">
-                            {{route.meta.title}}
-                        </el-menu-item>
-                    </template>
+                       <sidebar-item v-for="route in permission_routers" :key="route.path" :item="route" :base-path="route.path"/>
                 </el-menu>
             </el-scrollbar>
-
         </el-aside>
         <el-container>
             <el-header>
                 <div class="left-button">
                     <hamburger :toggle-click="toggleSideBar" :is-active="sidebar.opened" class="hamburger-container"/>
+                    <Breadcrumb/>
                 </div>
                 <div class="right-button">
-
                     <el-dropdown trigger="click" @command="handleCommand">
                           <span class="el-dropdown-link">
                             <i class="avatar"><img src="../assets/logo.png"></i><i
@@ -54,12 +34,6 @@
                 </div>
             </el-header>
             <el-main>
-                <el-breadcrumb separator="/">
-                    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                    <el-breadcrumb-item v-for="(item) in levelList" :key="item.path">
-                        {{item.meta.title}}
-                    </el-breadcrumb-item>
-                </el-breadcrumb>
                 <router-view/>
             </el-main>
         </el-container>
@@ -69,11 +43,15 @@
 <script>
     import {mapGetters} from 'vuex'
     import Hamburger from "../components/Hamburger";
+    import SidebarItem from '../components/SidebarItem';
+    import Breadcrumb from "../components/Breadcrumb";
 
     export default {
         name: 'layout',
         components: {
-            Hamburger
+            Hamburger,
+            SidebarItem,
+            Breadcrumb
         },
         computed: {
             ...mapGetters([
@@ -88,12 +66,6 @@
                     hideSidebar: !this.sidebar.opened,
                     openSidebar: this.sidebar.opened
                 }
-            }
-        },
-        data() {
-            return {
-                ok: true,
-                levelList: null
             }
         },
         methods: {
@@ -111,19 +83,9 @@
                 this.$store.dispatch("LogOut").then(() => {
                     location.reload();
                 });
-            },
-            getBreadcrumb() {
-                this.levelList = this.$route.matched.filter(item => item.path)
             }
         },
-        created() {
-            this.getBreadcrumb()
-        },
-        watch: {
-            $route() {
-                this.getBreadcrumb();
-            }
-        }
+
     }
 </script>
 
@@ -131,6 +93,7 @@
     // 侧边栏
     .sidebar-container {
         transition: width 0.28s;
+        box-shadow: 2px 0 6px rgba(0,21,41,.35);
         width: 200px !important;
         height: 100%;
         position: fixed;
@@ -175,6 +138,15 @@
     }
 
     .el-container {
+        min-height:100vh;
+        .el-header{
+            position: relative;
+            box-shadow: 0 1px 4px rgba(0,21,41,.08);
+            .hamburger-container{
+                float:left;
+                line-height: 60px;
+            }
+        }
 
         .el-header, .el-footer {
             margin-left: 200px;
@@ -187,7 +159,6 @@
         .el-aside {
             background-color: #304156;
             color: #333;
-            line-height: 200px;
             .el-menu {
                 border: none;
                 height: 100%;
@@ -200,24 +171,34 @@
 
         .el-main {
             margin-left: 200px;
-            background-color: #E9EEF3;
+            background-color: #f0f2f5;
             color: #333;
-            text-align: center;
-            height: 100%;
-            line-height: 160px;
         }
 
     }
 
 
-
+    .sidebar-container {
+        .nest-menu .el-submenu > .el-submenu__title{
+                background: #1f2d3d !important;
+        }
+        .el-submenu{
+            .el-menu-item{
+                background: #1f2d3d !important;
+                &.is-active{
+                    background:rgb(64, 158, 255) !important;
+                    color:#fff !important;
+                }
+            }
+        }
+    }
     //隐藏侧边栏样式
     .hideSidebar {
         .sidebar-container {
             width: 36px !important;
         }
         .el-header, .el-footer,.el-main {
-            margin-left: 36px;
+            margin-left: 36px!important;
         }
         .submenu-title-noDropdown {
             padding-left: 10px !important;
@@ -277,12 +258,29 @@
             height: 60px;
         }
     }
-
     .left-button {
         float: left;
     }
     .el-scrollbar {
         height: 100%;
+    }
+    .warn-content{
+        background: rgba(66,185,131,.1);
+        border-radius: 2px;
+        padding: 16px;
+        padding: 1rem;
+        line-height: 1.6rem;
+        word-spacing: .05rem;
+        a{
+            color: #42b983;
+            font-weight: 600;
+        }
+    }
+
+    a, a:focus, a:hover {
+        cursor: pointer;
+        color: inherit;
+        text-decoration: none;
     }
 
 </style>
